@@ -1,0 +1,22 @@
+{
+  "name": "soaylemer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "concurrently -k -n auth,web \"pnpm --filter auth-user-service dev\" \"pnpm --filter frontend dev\"",
+    "dev:services": "pnpm --parallel --filter './services/*' --if-present dev",
+    "build": "pnpm --filter frontend build",
+    "preview": "pnpm --filter frontend preview",
+    "test": "node --test tests/*.test.js",
+    "check": "pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "concurrently": "^9.2.1",
+    "supertest": "^7.2.2",
+    "socket.io-client": "^4.8.1"
+  }
+}

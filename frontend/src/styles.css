@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ocean: #0a393b;
+  --color-teal: #18776e;
+  --color-seafoam: #a3e5d1;
+  --color-mist: #f2f7f6;
+  --color-line: #d7e3df;
+  --font-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  body { @apply m-0 bg-mist font-sans text-base antialiased; }
+  button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
+  button { @apply cursor-pointer; }
+  button:disabled { @apply cursor-not-allowed opacity-60; }
+  :focus-visible { @apply outline-2 outline-offset-4 outline-teal; }
+  label { @apply mb-2 block text-sm font-semibold text-ocean; }
+  input:not([type=radio]), textarea { @apply block w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ocean outline-none transition-colors; }
+  input:focus, textarea:focus { @apply border-teal ring-2 ring-teal/15; }
+  input::placeholder, textarea::placeholder { @apply text-slate-400; }
+}
+
+@layer components {
+  .brand { @apply relative z-10 flex w-fit items-center gap-3 text-lg font-bold tracking-widest; }
+  .brand-subtitle { @apply mt-0.5 block text-[0.625rem] font-normal tracking-[0.18em]; }
+  .eyebrow { @apply text-xs font-bold tracking-[0.16em]; }
+  .auth-shell { @apply min-h-screen lg:grid lg:grid-cols-[0.95fr_1.05fr]; }
+  .auth-story { @apply relative flex flex-col overflow-hidden bg-ocean px-7 py-8 text-white md:px-12 lg:min-h-screen lg:px-14 lg:py-12; }
+  .story-copy { @apply relative z-10 my-12 lg:my-auto lg:py-20; }
+  .story-copy h1 { @apply mb-7 mt-6 text-[2.8rem] font-medium leading-[1.12] tracking-[-0.045em] sm:text-6xl xl:text-[4.4rem]; }
+  .story-copy h1 span { @apply text-seafoam; }
+  .story-signature { @apply relative z-10 hidden items-center gap-4 text-sm text-white/70 lg:flex; }
+  .signature-line { @apply h-px w-12 bg-seafoam/60; }
+  .contour { @apply pointer-events-none absolute rounded-[48%] border border-seafoam/10; }
+  .contour-one { width: 43rem; height: 43rem; right: -32rem; top: 3rem; transform: rotate(25deg); }
+  .contour-two { width: 48rem; height: 48rem; right: -33rem; top: 5rem; transform: rotate(25deg); }
+  .auth-main { @apply flex min-h-screen flex-col bg-white px-6 py-7 sm:px-10 lg:px-14 lg:py-12; }
+  .auth-topline { @apply flex justify-between gap-4 text-xs tracking-widest text-slate-500; }
+  .edition-label { @apply hidden xl:inline; }
+  .auth-form-wrap { @apply mx-auto my-auto w-full max-w-[27rem] py-14; }
+  .auth-tab { @apply border-b-2 border-transparent pb-3 text-sm font-semibold text-slate-500 transition-colors; }
+  .auth-tab.selected { @apply border-ocean text-ocean; }
+  .auth-bottomline { @apply text-center text-xs text-slate-500; }
+  .password-toggle { @apply absolute inset-y-0 right-3 text-sm font-semibold text-teal; }
+  .field-hint { @apply mt-2 text-sm leading-relaxed text-slate-500; }
+  .color-choice { @apply m-0 cursor-pointer rounded-full; }
+  .color-swatch { @apply block h-8 w-8 rounded-full; }
+  .button-primary { @apply rounded-xl bg-ocean px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-teal; }
+  .button-quiet { @apply rounded-xl px-4 py-3 text-sm font-semibold text-ocean transition-colors hover:bg-ocean/5; }
+  .text-link { @apply font-semibold text-teal underline decoration-teal/40 underline-offset-4 hover:decoration-teal; }
+  .message { @apply rounded-xl border px-4 py-3 text-sm leading-relaxed; }
+  .message.error { @apply border-red-200 bg-red-50 text-red-800; }
+  .message.warning { @apply border-amber-200 bg-amber-50 text-amber-900; }
+  .message.success { @apply border-emerald-200 bg-emerald-50 text-emerald-900; }
+  .app-header { @apply flex flex-wrap items-center justify-between gap-5 border-b border-line bg-white px-5 py-5 md:px-8 lg:px-12; }
+  .nav-link { @apply rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-mist; }
+  .nav-link.active { @apply bg-mist text-teal; }
+  .panel { @apply rounded-2xl border border-line bg-white p-7 md:p-8; }
+  .phase-panel { @apply rounded-2xl bg-ocean p-8 text-white md:p-10; }
+  .phase-badge { @apply inline-block rounded-full border border-seafoam/30 px-3 py-1.5 text-xs font-medium text-seafoam; }
+  .page-footer { @apply mx-auto flex max-w-6xl flex-wrap justify-between gap-3 border-t border-line px-5 py-7 text-xs tracking-wide text-slate-500 md:px-8; }
+  .skip-link { @apply absolute -top-20 left-4 z-50 rounded-lg bg-white p-3 text-ocean focus:top-4; }
+}
+
+@media (max-width: 1023px) {
+  .auth-story .story-copy { display: none; }
+  .auth-main { min-height: calc(100svh - 6.5rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
