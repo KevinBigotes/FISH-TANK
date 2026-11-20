@@ -92,8 +92,8 @@ create policy profiles_owner_update on public.profiles
 drop policy if exists fish_public_read on public.fish;
 create policy fish_public_read on public.fish
   for select to anon, authenticated using (true);
--- Sin escrituras de fish desde el navegador en Fase 1. Fase 2 incorporará
--- publicación desde drawing-processing-service después de moderar la imagen.
+-- Sin escrituras de fish desde el navegador. Solo drawing-processing-service
+-- publica después de verificar al creador y moderar la imagen.
 -- No se concede service_role al frontend ni al servicio de usuarios.
 
 drop policy if exists aquarium_owner_read on public.personal_aquarium_fish;

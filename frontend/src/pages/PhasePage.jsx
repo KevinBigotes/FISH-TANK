@@ -2,8 +2,6 @@ import { ProfileCard } from '../components/ProfileCard.jsx';
 import { useAuth } from '../auth/AuthProvider.jsx';
 
 const content = {
-  aquarium: { phase: 3, title: 'Pecera comunitaria', lead: 'Un océano que imaginaremos juntos.', description: 'Aquí cobrarán vida las creaciones de nuestra comunidad. La experiencia en tiempo real llegará en la siguiente etapa de la exposición.' },
-  drawing: { phase: 2, title: 'Dibujar', lead: 'Tu próxima idea empieza contigo.', description: 'Aquí podrás dibujar y preparar una creación para compartirla. El espacio de dibujo estará disponible en la próxima etapa.' },
   collection: { phase: 4, title: 'Mi pecera', lead: 'Un lugar para tus descubrimientos.', description: 'Aquí podrás reunir tus peces favoritos, incluidos los de otros creadores. Tu colección personal estará disponible más adelante.' },
 };
 

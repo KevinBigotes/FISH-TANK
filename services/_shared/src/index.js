@@ -36,7 +36,7 @@ export function corsOptions(origins) {
   };
 }
 
-export function createBaseApp({ name, phase, corsOrigins = [], trustProxyHops = 0 }) {
+export function createBaseApp({ name, phase, status = phase === 1 ? 'ok' : 'scaffold', corsOrigins = [], trustProxyHops = 0 }) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', trustProxyHops);
@@ -49,7 +49,7 @@ export function createBaseApp({ name, phase, corsOrigins = [], trustProxyHops = 
   }));
   app.use(express.json({ limit: '32kb' }));
   app.get('/health', (_req, res) => res.json({
-    service: name, status: phase === 1 ? 'ok' : 'scaffold', phase,
+    service: name, status, phase,
   }));
   return app;
 }

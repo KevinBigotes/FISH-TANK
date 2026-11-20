@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@fish-tank/service-core": "workspace:*",
+    "@supabase/supabase-js": "2.119.2",
     "socket.io": "^4.8.1"
   }
 }

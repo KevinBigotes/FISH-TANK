@@ -4,18 +4,21 @@ import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { AppLayout } from './components/AppLayout.jsx';
 import { AuthPage } from './pages/AuthPage.jsx';
 import { PhasePage } from './pages/PhasePage.jsx';
+import { DrawingPage } from './pages/DrawingPage.jsx';
+const AquariumPage = lazy(() => import('./pages/AquariumPage.jsx').then((module) => ({ default: module.AquariumPage })));
 
 export function App({ initialAuth }) {
   return <AuthProvider initialAuth={initialAuth}><HashRouter><Routes>
     <Route path="/login" element={<AuthPage key="login" />} />
     <Route path="/registro" element={<AuthPage key="register" mode="register" />} />
+    <Route path="/pecera" element={<Suspense fallback={<div className="aquarium-loading" role="status">Abriendo el arrecife…</div>}><AquariumPage /></Suspense>} />
     <Route element={<ProtectedRoute />}>
       <Route element={<AppLayout />}>
-        <Route path="/pecera" element={<PhasePage type="aquarium" />} />
-        <Route path="/dibujar" element={<PhasePage type="drawing" />} />
+        <Route path="/dibujar" element={<DrawingPage />} />
         <Route path="/mi-pecera" element={<PhasePage type="collection" />} />
       </Route>
     </Route>
     <Route path="*" element={<Navigate to="/pecera" replace />} />
   </Routes></HashRouter></AuthProvider>;
 }
+import { lazy, Suspense } from 'react';

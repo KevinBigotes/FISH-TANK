@@ -1,12 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
-import { io as socketClient } from 'socket.io-client';
 import { createAuthApp } from '../services/auth-user-service/src/app.js';
 import { createSupabaseClients } from '../services/auth-user-service/src/supabase.js';
-import { createDrawingApp } from '../services/drawing-processing-service/src/app.js';
 import { createGalleryApp } from '../services/gallery-collection-service/src/app.js';
-import { createAquariumServer } from '../services/aquarium-ecosystem-service/src/app.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
 function setup() {
@@ -88,22 +85,9 @@ test('el servicio de usuarios rechaza claves que omiten RLS', () => {
 });
 
 test('servicios futuros arrancan y responden 501 sin implementar sus funcionalidades', async () => {
-  for (const app of [createDrawingApp(), createGalleryApp()]) {
+  for (const app of [createGalleryApp()]) {
     const health = await request(app).get('/health').expect(200);
     assert.equal(health.body.status, 'scaffold');
     await request(app).post('/api/v1/fish').send({}).expect(501);
   }
-});
-
-test('Socket.io está instalado pero no admite operaciones antes de Fase 3', { timeout: 5000 }, async (t) => {
-  const { server, io } = createAquariumServer();
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-  t.after(() => new Promise((resolve) => io.close(resolve)));
-  const client = socketClient(`http://127.0.0.1:${server.address().port}`, { transports: ['websocket'], reconnection: false });
-  t.after(() => client.close());
-  const error = await new Promise((resolve, reject) => {
-    client.on('connect_error', resolve);
-    client.on('connect', () => reject(new Error('Se habilitó una conexión antes de Fase 3.')));
-  });
-  assert.equal(error.data.code, 'PHASE_NOT_IMPLEMENTED');
 });
