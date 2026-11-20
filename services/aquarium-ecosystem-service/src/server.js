@@ -1,4 +1,4 @@
-import { readServerConfig, startService } from '@soaylemer/service-core';
+import { readServerConfig, startService } from '@fish-tank/service-core';
 import { createAquariumServer } from './app.js';
 
 const config = readServerConfig(process.env, 3003);

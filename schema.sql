@@ -1,4 +1,4 @@
--- SOAYLEMER · Fase 1
+-- Fish Tank · Fase 1
 -- Ejecutar completo en Supabase > SQL Editor, con el rol postgres.
 -- Puede repetirse sobre este mismo esquema sin borrar datos.
 begin;

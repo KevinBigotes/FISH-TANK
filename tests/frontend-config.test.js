@@ -9,7 +9,16 @@ test('la configuración permite claves públicas y rechaza secretos y HTTP remot
   assert.equal(readPublicConfig(valid).authServiceUrl, 'http://localhost:3001');
   assert.ok(readPublicConfig({ ...valid, VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_secret_example' }).errors.length);
   assert.ok(readPublicConfig({ ...valid, VITE_AUTH_USER_SERVICE_URL: 'http://api.example.com' }).errors.length);
-  assert.ok(readPublicConfig({}).errors.length);
+  assert.ok(readPublicConfig({}, {}).errors.length);
+});
+
+test('Pages puede autenticar con la configuración pública sin backend Node', () => {
+  const config = readPublicConfig({});
+  assert.deepEqual(config.errors, []);
+  assert.equal(config.authServiceUrl, '');
+  assert.equal(new URL(config.supabaseUrl).hostname, 'zskigxxernjyvectrjhl.supabase.co');
+  assert.ok(config.supabaseKey.startsWith('sb_publishable_'));
+  assert.deepEqual(readPublicConfig({ VITE_SUPABASE_URL: '', VITE_SUPABASE_PUBLISHABLE_KEY: '' }).errors, []);
 });
 
 test('los errores de autenticación dan instrucciones específicas sin filtrar errores internos', () => {

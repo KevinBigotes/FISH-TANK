@@ -66,7 +66,7 @@ importers:
 
   services/aquarium-ecosystem-service:
     dependencies:
-      '@soaylemer/service-core':
+      '@fish-tank/service-core':
         specifier: workspace:*
         version: link:../_shared
       socket.io:
@@ -75,7 +75,7 @@ importers:
 
   services/auth-user-service:
     dependencies:
-      '@soaylemer/service-core':
+      '@fish-tank/service-core':
         specifier: workspace:*
         version: link:../_shared
       '@supabase/supabase-js':
@@ -87,13 +87,13 @@ importers:
 
   services/drawing-processing-service:
     dependencies:
-      '@soaylemer/service-core':
+      '@fish-tank/service-core':
         specifier: workspace:*
         version: link:../_shared
 
   services/gallery-collection-service:
     dependencies:
-      '@soaylemer/service-core':
+      '@fish-tank/service-core':
         specifier: workspace:*
         version: link:../_shared
 

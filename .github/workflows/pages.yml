@@ -1,8 +1,8 @@
-name: Frontend en GitHub Pages
+name: Fish Tank en GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
   workflow_dispatch:
 
 permissions:
@@ -23,11 +23,10 @@ jobs:
       VITE_AUTH_USER_SERVICE_URL: ${{ vars.VITE_AUTH_USER_SERVICE_URL }}
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: pnpm
+      - uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
       - run: node scripts/check-public-env.mjs
       - run: pnpm test

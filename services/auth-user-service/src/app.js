@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createBaseApp, finishApp, HttpError } from '@soaylemer/service-core';
+import { createBaseApp, finishApp, HttpError } from '@fish-tank/service-core';
 
 const profileFields = 'id,username,avatar_color,bio,created_at';
 const username = z.string().trim().toLowerCase().regex(/^[a-z0-9_]{3,40}$/);

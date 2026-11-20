@@ -27,6 +27,6 @@ export function AppLayout() {
     </header>
     {error && <p role="alert" className="message error mx-auto mt-4 max-w-6xl">{error}</p>}
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-5 py-10 md:px-8 md:py-16"><Outlet /></main>
-    <footer className="page-footer"><span>SOAYLEMER</span><span>Imaginación compartida. Posibilidades infinitas.</span></footer>
+    <footer className="page-footer"><span>FISH TANK</span><span>Imaginación compartida. Posibilidades infinitas.</span></footer>
   </div>;
 }

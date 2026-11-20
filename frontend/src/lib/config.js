@@ -1,9 +1,13 @@
-export function readPublicConfig(env) {
-  const supabaseUrl = env.VITE_SUPABASE_URL?.trim() || '';
-  const supabaseKey = (env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY)?.trim() || '';
+import { projectConfig } from './project-config.js';
+
+export function readPublicConfig(env, defaults = projectConfig) {
+  const supabaseUrl = env.VITE_SUPABASE_URL?.trim() || defaults.supabaseUrl || '';
+  const supabaseKey = (env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY)?.trim() || defaults.supabaseKey || '';
   const authServiceUrl = env.VITE_AUTH_USER_SERVICE_URL?.trim().replace(/\/+$/, '') || '';
   const errors = [];
   for (const [name, value] of [['VITE_SUPABASE_URL', supabaseUrl], ['VITE_AUTH_USER_SERVICE_URL', authServiceUrl]]) {
+    // Pages puede autenticar con Supabase sin un servicio Node desplegado todavía.
+    if (name === 'VITE_AUTH_USER_SERVICE_URL' && !value) continue;
     try {
       const url = new URL(value);
       if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.search || url.hash || value.includes('TU-PROYECTO')) throw new Error();

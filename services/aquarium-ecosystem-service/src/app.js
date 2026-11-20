@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
-import { corsOptions, createPlaceholderApp } from '@soaylemer/service-core';
+import { corsOptions, createPlaceholderApp } from '@fish-tank/service-core';
 
 export function createAquariumServer(config = {}) {
   const origins = config.corsOrigins || [];

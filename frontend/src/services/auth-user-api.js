@@ -1,6 +1,9 @@
 import { config } from '../lib/config.js';
 
 async function request(path, { token, method = 'GET', body, signal } = {}) {
+  if (!config.authServiceUrl) {
+    throw new Error('Tu sesión está activa. La consulta y edición del perfil estarán disponibles cuando se conecte el servicio de usuarios.');
+  }
   let response;
   try {
     response = await fetch(`${config.authServiceUrl}/api/v1${path}`, {

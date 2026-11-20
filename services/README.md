@@ -1,6 +1,6 @@
 # Contratos SOA · Fase 1
 
-Todos los servicios exponen `GET /health` como liveness (no comprueba disponibilidad de Supabase). Todas las APIs están versionadas bajo `/api/v1`. Los procesos comparten únicamente utilidades HTTP mediante `@soaylemer/service-core`; no se invocan entre sí en Fase 1. La base de datos central es Supabase PostgreSQL.
+Todos los servicios exponen `GET /health` como liveness (no comprueba disponibilidad de Supabase). Todas las APIs están versionadas bajo `/api/v1`. Los procesos comparten únicamente utilidades HTTP mediante `@fish-tank/service-core`; no se invocan entre sí en Fase 1. La base de datos central es Supabase PostgreSQL.
 
 ## auth-user-service · puerto 3001
 

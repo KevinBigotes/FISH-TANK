@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import { authUserApi } from '../services/auth-user-api.js';
+import { config } from '../lib/config.js';
 
 export function ProfileCard() {
   const { session, profile, setProfile, profileLoading, profileError, reloadProfile } = useAuth();
@@ -24,7 +25,11 @@ export function ProfileCard() {
     <p className="eyebrow text-teal">TU ESPACIO</p>
     <h2 id="profile-title" className="mt-2 text-2xl font-semibold text-ocean">Tu identidad de creador</h2>
     {profileLoading && <p className="mt-5 text-slate-600" role="status">Cargando tu perfil…</p>}
-    {profileError && <div className="mt-5"><p role="alert" className="message error">{profileError}</p><button type="button" className="text-link mt-3" onClick={reloadProfile}>Reintentar</button></div>}
+    {profileError && <div className="mt-5">
+      <p role={config.authServiceUrl ? 'alert' : 'status'} className={`message ${config.authServiceUrl ? 'error' : 'warning'}`}>{profileError}</p>
+      {!config.authServiceUrl && <p className="mt-4 break-all text-sm text-slate-600">Sesión iniciada: {session.user.email}</p>}
+      {config.authServiceUrl && <button type="button" className="text-link mt-3" onClick={reloadProfile}>Reintentar</button>}
+    </div>}
     {notice && <p role="status" className="message success mt-4">{notice}</p>}
     {error && <p role="alert" className="message error mt-4">{error}</p>}
     {profile && (editing ? <form onSubmit={save} className="mt-5 space-y-4">

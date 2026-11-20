@@ -8,7 +8,7 @@
     "start": "node --env-file-if-exists=.env src/server.js"
   },
   "dependencies": {
-    "@soaylemer/service-core": "workspace:*",
+    "@fish-tank/service-core": "workspace:*",
     "socket.io": "^4.8.1"
   }
 }
