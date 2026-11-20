@@ -1,4 +1,4 @@
-# SOAYLEMER · Fase 1
+# FISH TANK · Fase 1
 
 Base de una exposición colaborativa inspirada en Sketch Aquarium. Esta entrega incluye arquitectura SOA, Supabase Auth, perfiles, rutas protegidas y un frontend estático para GitHub Pages. **No incluye lienzo, procesamiento de imágenes, peces animados, clima ni colecciones funcionales.**
 
