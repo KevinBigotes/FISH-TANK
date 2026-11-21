@@ -10,7 +10,8 @@ async function request(path, { token, method = 'GET', body, signal } = {}) {
       method,
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}) },
       ...(body ? { body: JSON.stringify(body) } : {}),
-      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(12_000)]) : AbortSignal.timeout(12_000),
+      // Free hosting can take about a minute to wake after inactivity.
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(90_000)]) : AbortSignal.timeout(90_000),
     });
   } catch (error) {
     if (signal?.aborted) throw error;

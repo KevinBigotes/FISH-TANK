@@ -9,7 +9,7 @@ async function request(path, { privateRequest = false, method = 'GET', signal } 
     token = data.session.access_token;
   }
   let response;
-  try { response = await fetch(`${config.galleryServiceUrl}/api${path}`, { method, headers: token ? { Authorization: `Bearer ${token}` } : {}, signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) }); }
+  try { response = await fetch(`${config.galleryServiceUrl}/api${path}`, { method, headers: token ? { Authorization: `Bearer ${token}` } : {}, signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(90000)]) : AbortSignal.timeout(90000) }); }
   catch (error) { if (signal?.aborted) throw error; throw new Error('No se pudo conectar con tu pecera. Reintenta cuando vuelva la conexión.'); }
   if (response.status === 204) return;
   const json = await response.json();

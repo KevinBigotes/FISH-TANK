@@ -5,7 +5,7 @@ export async function drawingCapabilities(signal) {
   if (!config.drawingServiceUrl) return { ready: false, reason: 'El servicio de dibujos todavía no está conectado a esta versión de la exposición.' };
   try {
     const response = await fetch(`${config.drawingServiceUrl}/api/v1/capabilities`, {
-      signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]),
+      signal: AbortSignal.any([signal, AbortSignal.timeout(90_000)]),
     });
     const result = await response.json();
     if (!response.ok || typeof result.data?.ready !== 'boolean') throw new Error();

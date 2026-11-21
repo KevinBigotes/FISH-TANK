@@ -94,7 +94,7 @@ export function DrawingPage() {
           </div>
         </fieldset>
 
-        {!capabilities && <p role="status" className="mt-5 text-sm text-slate-500">Conectando con la exposición…</p>}
+        {!capabilities && <p role="status" className="mt-5 text-sm text-slate-500">Conectando con la exposición… El primer inicio puede tardar un minuto. Puedes seguir dibujando.</p>}
         {capabilities && !capabilities.ready && <div className="message warning mt-5" role="status">
           <p>{capabilities.reason} Puedes seguir dibujando.</p>
           <button type="button" className="text-link mt-2" onClick={() => setAttempt((value) => value + 1)}>Reintentar conexión</button>

@@ -97,6 +97,23 @@ Para activar Sightengine, configura `SIGHTENGINE_API_USER`, `SIGHTENGINE_API_SEC
 
 ## GitHub Pages: publicar la aplicación
 
+El backend de Fish Tank está configurado en Render mediante [render.yaml](render.yaml), con cuatro instancias gratuitas independientes:
+
+| Servicio | URL HTTPS |
+| --- | --- |
+| Usuarios | `https://fish-tank-auth.onrender.com` |
+| Dibujos | `https://fish-tank-drawing.onrender.com` |
+| Ecosistema | `https://fish-tank-aquarium.onrender.com` |
+| Colecciones | `https://fish-tank-gallery.onrender.com` |
+
+Las cuatro variables `VITE_*_SERVICE_URL` del repositorio apuntan a estas direcciones. El servicio de dibujos se enlaza al ecosistema mediante HTTPS y un token interno compartido que permanece en Render. La clave secreta de Supabase solo está en el servicio de dibujos; no se necesita mantener la PC encendida.
+
+Las instancias gratuitas pueden tardar aproximadamente un minuto en despertar tras 15 minutos sin actividad. El frontend espera hasta 90 segundos en las consultas de perfiles, colecciones y disponibilidad de dibujos. Render comparte 750 horas gratuitas al mes entre los servicios del workspace; cuatro servicios activos continuamente pueden agotar esa cuota. Consulta los [límites del plan gratuito](https://render.com/docs/free).
+
+La moderación continúa en modo de prueba (`MOCK_EXTERNAL_APIS=true`); el clima permanece pendiente de configurar en Render. Los peces y PNG se guardan realmente en Supabase. No se contrató ningún plan de pago.
+
+Para actualizar la infraestructura, sube `render.yaml` y usa **Manual sync** en el Blueprint **Fish Tank** si Render no lo sincroniza automáticamente. El repositorio se conectó mediante su URL pública; no se debe asumir que están habilitados los despliegues automáticos del proveedor Git. GitHub Pages sí se publica al subir a `master`.
+
 Este repositorio usa **`master`**. El workflow `.github/workflows/pages.yml` se ejecuta al subir cambios a `master` o `main`, y también manualmente. Instala dependencias, prueba los servicios/esquema, compila Vite y publica **`frontend/dist`**, cuyo archivo de entrada es `index.html`.
 
 En [Settings → Pages](https://github.com/KevinBigotes/FISH-TANK/settings/pages), **Source debe ser GitHub Actions**. Publicar `master / (root)` con Jekyll muestra el README porque el index de la aplicación se genera durante la compilación. No muevas el index fuente a la raíz ni guardes `node_modules` o `dist` en Git.
