@@ -2,7 +2,7 @@
 
 Aplicación: **https://kevinbigotes.github.io/FISH-TANK/**
 
-Aplicación SOA para una exposición colaborativa inspirada en Sketch Aquarium. Incluye autenticación, lienzo táctil, publicación de peces y una pecera comunitaria con Canvas 2D, Socket.io, clima de OpenWeatherMap y acceso por QR. Los clics sobre peces y las colecciones personales quedan pendientes para Fase 4. Esta fase se prueba en local; la URL de Pages conserva la última versión publicada.
+Aplicación SOA para una exposición colaborativa inspirada en Sketch Aquarium. Incluye autenticación, lienzo táctil, publicación de peces, pecera comunitaria con Canvas 2D, Socket.io, clima y QR, perfiles de creadores y colecciones personales. El frontend se publica en GitHub Pages y los cuatro servicios en Render.
 
 ## Arrancar en Windows sin npm
 
@@ -110,7 +110,7 @@ Las cuatro variables `VITE_*_SERVICE_URL` del repositorio apuntan a estas direcc
 
 Las instancias gratuitas pueden tardar aproximadamente un minuto en despertar tras 15 minutos sin actividad. El frontend espera hasta 90 segundos en las consultas de perfiles, colecciones y disponibilidad de dibujos. Render comparte 750 horas gratuitas al mes entre los servicios del workspace; cuatro servicios activos continuamente pueden agotar esa cuota. Consulta los [límites del plan gratuito](https://render.com/docs/free).
 
-La moderación continúa en modo de prueba (`MOCK_EXTERNAL_APIS=true`); el clima permanece pendiente de configurar en Render. Los peces y PNG se guardan realmente en Supabase. No se contrató ningún plan de pago.
+La moderación continúa en modo de prueba (`MOCK_EXTERNAL_APIS=true`). El clima usa exclusivamente **Current Weather Data 2.5**, `https://api.openweathermap.org/data/2.5/weather`, con `OPENWEATHER_API_KEY` configurada únicamente en el backend. No utiliza One Call 3.0. Se consulta una vez cada 10 minutos por instancia y se comparte el resultado con las pantallas. Los peces y PNG se guardan realmente en Supabase. No se contrató ningún plan de pago.
 
 Para actualizar la infraestructura, sube `render.yaml` y usa **Manual sync** en el Blueprint **Fish Tank** si Render no lo sincroniza automáticamente. El repositorio se conectó mediante su URL pública; no se debe asumir que están habilitados los despliegues automáticos del proveedor Git. GitHub Pages sí se publica al subir a `master`.
 

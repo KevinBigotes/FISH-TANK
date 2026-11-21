@@ -28,6 +28,8 @@ services:
       - fromGroup: fish-tank-public-config
       - key: ECOSYSTEM_SERVICE_TOKEN
         generateValue: true
+      - key: OPENWEATHER_API_KEY
+        sync: false
       - key: WEATHER_LAT
         value: '20.5'
       - key: WEATHER_LON

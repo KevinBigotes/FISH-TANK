@@ -96,6 +96,8 @@ test('OpenWeatherMap usa coordenadas y unidades métricas; cambia a noche según
   let now = Date.UTC(2026, 10, 20, 22, 59), calls = 0;
   const body = { main: { temp: 27.4 }, wind: { speed: 8 }, weather: [{ id: 501, description: 'lluvia moderada' }], rain: { '1h': 2 }, clouds: { all: 80 }, dt: now / 1000, sys: { sunrise: (now - 40_000_000) / 1000, sunset: (now + 60_000) / 1000 } };
   const service = createWeatherService(weatherConfig, { now: () => now, fetchImpl: async (url) => {
+    assert.equal(url.origin, 'https://api.openweathermap.org');
+    assert.equal(url.pathname, '/data/2.5/weather');
     calls++; assert.equal(url.hostname, 'api.openweathermap.org'); assert.equal(url.searchParams.get('lat'), '20.5'); assert.equal(url.searchParams.get('units'), 'metric'); assert.equal(url.searchParams.get('lang'), 'es');
     return { ok: true, json: async () => body };
   } });
