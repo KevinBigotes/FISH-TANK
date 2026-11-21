@@ -1,4 +1,5 @@
 import { advanceSwimmer, clamp, createSwimmer, environmentFor, seededRandom } from './model.js';
+import { hitSprite } from './hit-test.js';
 
 const mix = (a, b, f) => a + (b - a) * f;
 const rgb = (a, b, f) => `rgb(${a.map((v, i) => Math.round(mix(v, b[i], f))).join(',')})`;
@@ -6,6 +7,7 @@ const rgb = (a, b, f) => `rgb(${a.map((v, i) => Math.round(mix(v, b[i], f))).joi
 export function createAquariumRenderer(canvas, { onImageError = () => {} } = {}) {
   const ctx = canvas.getContext('2d', { alpha: false });
   const swimmers = new Map();
+  let drawn = [], selectedId = null;
   const random = seededRandom('fish-tank-reef');
   const particles = Array.from({ length: 120 }, () => ({ x: random(), y: random(), radius: 0.8 + random() * 3, speed: 8 + random() * 20, phase: random() * 6 }));
   const plants = Array.from({ length: 32 }, (_, i) => ({ x: i / 31, height: 50 + random() * 130, phase: random() * 6, shade: random() }));
@@ -112,7 +114,9 @@ export function createAquariumRenderer(canvas, { onImageError = () => {} } = {})
     ctx.save(); ctx.globalAlpha = opacity; ctx.translate(x, y); ctx.rotate(wave * 0.025);
     const flutter = Math.sin(time * 3.2 + swimmer.phase) * 0.025;
     ctx.scale(swimmer.face * (1 + flutter), 1 - flutter);
+    drawn.push({ fish: swimmer.fish, x, y, angle: wave * 0.025, sx: swimmer.face * (1 + flutter), sy: 1 - flutter, width: w, height: h, mask: swimmer.mask });
     if (lighting.night > 0.3) { ctx.shadowColor = '#75f7db'; ctx.shadowBlur = lighting.night * 9; }
+    if (selectedId === swimmer.fish.id) { ctx.shadowColor = '#fff0a8'; ctx.shadowBlur = 24; }
     ctx.drawImage(image, -w / 2, -h / 2, w, h); ctx.restore();
     ctx.save(); ctx.globalAlpha = opacity * 0.8;
     ctx.font = '12px "Segoe UI", sans-serif'; ctx.textAlign = 'center';
@@ -123,6 +127,7 @@ export function createAquariumRenderer(canvas, { onImageError = () => {} } = {})
     ctx.fillStyle = '#e6f4ee'; ctx.fillText(label, x, y + h / 2 + 24); ctx.restore();
   }
   function render(dt) {
+    drawn = [];
     time += dt;
     for (const key of ['night', 'current', 'clouds']) lighting[key] = mix(lighting[key], target[key], paused ? 1 : Math.min(1, dt * 0.6));
     background();
@@ -149,6 +154,8 @@ export function createAquariumRenderer(canvas, { onImageError = () => {} } = {})
   function visibility() { cancelAnimationFrame(frame); last = 0; if (!document.hidden) frame = requestAnimationFrame(tick); }
   document.addEventListener('visibilitychange', visibility); frame = requestAnimationFrame(tick);
   return {
+    select(id) { selectedId = id; dirty = true; },
+    hit(point) { return [...drawn].reverse().find((sprite) => hitSprite(point, sprite))?.fish || null; },
     setFish(fish, loaded) {
       const ids = new Set(fish.map((entry) => entry.id));
       for (const id of swimmers.keys()) if (!ids.has(id)) swimmers.delete(id);
@@ -157,7 +164,20 @@ export function createAquariumRenderer(canvas, { onImageError = () => {} } = {})
         if (swimmer && swimmer.fish.image_url === entry.image_url) { swimmer.fish = entry; continue; }
         swimmer = { ...createSwimmer(entry), entering: initialized, image: new Image() };
         swimmers.set(entry.id, swimmer); swimmer.image.crossOrigin = 'anonymous'; swimmer.image.decoding = 'async';
-        swimmer.image.onload = () => { if (stopped || swimmers.get(entry.id) !== swimmer) return; swimmer.age = 0; if (swimmer.entering) spawnBurst(swimmer); dirty = true; };
+        swimmer.image.onload = () => {
+          if (stopped || swimmers.get(entry.id) !== swimmer) return;
+          const maskCanvas = document.createElement('canvas');
+          const ratio = Math.min(1, 512 / Math.max(swimmer.image.naturalWidth, swimmer.image.naturalHeight));
+          maskCanvas.width = Math.max(1, Math.round(swimmer.image.naturalWidth * ratio)); maskCanvas.height = Math.max(1, Math.round(swimmer.image.naturalHeight * ratio));
+          try {
+            const m = maskCanvas.getContext('2d'); m.drawImage(swimmer.image, 0, 0, maskCanvas.width, maskCanvas.height);
+            const rgba = m.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
+            const alpha = new Uint8Array(maskCanvas.width * maskCanvas.height);
+            for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
+            swimmer.mask = { width: maskCanvas.width, height: maskCanvas.height, alpha };
+          } catch { /* La lista accesible permite seleccionar imágenes sin CORS. */ }
+          swimmer.age = 0; if (swimmer.entering) spawnBurst(swimmer); dirty = true;
+        };
         swimmer.image.onerror = () => { if (!stopped) onImageError(); };
         try { const url = new URL(entry.image_url); if (!['http:', 'https:'].includes(url.protocol)) throw new Error(); swimmer.image.src = url.href; }
         catch { onImageError(); }

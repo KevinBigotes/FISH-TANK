@@ -22,6 +22,7 @@ async function request(path, { token, method = 'GET', body, signal } = {}) {
 }
 
 export const authUserApi = {
+  getCreator: (id, signal) => request(`/creators/${id}`, { signal }),
   getProfile: (token, signal) => request('/me', { token, signal }),
   updateProfile: (token, body) => request('/me', { token, body, method: 'PATCH' }),
   getSession: (token, signal) => request('/session', { token, signal }),

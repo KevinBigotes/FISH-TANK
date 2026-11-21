@@ -126,6 +126,9 @@ importers:
       '@fish-tank/service-core':
         specifier: workspace:*
         version: link:../_shared
+      '@supabase/supabase-js':
+        specifier: 2.119.2
+        version: 2.119.2
 
 packages:
 

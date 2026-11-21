@@ -1,4 +1,4 @@
-# Contratos SOA · Fases 1, 2 y 3
+# Contratos SOA · Fases 1 a 4
 
 Todos los servicios exponen `GET /health` como liveness (no comprueba disponibilidad de Supabase). Todas las APIs están versionadas bajo `/api/v1`. Los procesos comparten únicamente utilidades HTTP mediante `@fish-tank/service-core`; cada servicio verifica sus propias solicitudes. La base de datos central es Supabase PostgreSQL.
 
@@ -86,17 +86,26 @@ Se mantienen los 200 peces más recientes (`AQUARIUM_MAX_FISH`, entre 1 y 1000) 
 
 El clima usa coordenadas configurables, idioma español y unidades métricas de OpenWeatherMap. Una consulta por servicio cada 10 minutos abastece a todos los clientes. Amanecer/ocaso se comparan como timestamps UTC; `WEATHER_TIMEZONE` se utiliza para la hora local visible. Los errores 401, respuestas incompletas y fallos de red producen un estado explícito; las lecturas se conservan como stale hasta una hora desde la última consulta correcta (o dos horas desde la observación original). No hay clima ficticio de respaldo.
 
-## Servicios reservados
+## gallery-collection-service · puerto 3004
 
-| Servicio | Puerto | Contrato provisional |
+Las rutas siguientes también tienen alias bajo `/api/v1`. El servicio valida el JWT mediante Supabase Auth y usa un cliente con ese token para conservar RLS. Solo necesita la clave publishable/anon.
+
+| Método y ruta | Autenticación | Resultado |
 | --- | --- | --- |
-| gallery-collection-service | 3004 | `GET /health` y `501 PHASE_NOT_IMPLEMENTED` bajo `/api/v1`. |
+| `GET /health` | Pública | `{ service, status: "ok", phase: 4 }`. |
+| `GET /api/creators/:id/fish?limit=40&offset=0` | Pública | `{ data: fish[], hasMore }`; máximo 100 por página. Orden por fecha descendente e id. |
+| `GET /api/personal-aquarium` | Bearer JWT | `{ data: fish[] }`; unión sin duplicados de propios (`kind: "created"`) y adoptados (`kind: "adopted"`, `saved_at`). |
+| `GET /api/personal-aquarium/:fishId` | Bearer JWT | `{ data: { saved: boolean } }` para ese usuario. |
+| `POST /api/personal-aquarium/:fishId` | Bearer JWT | Sin cuerpo. 201 al guardar, 200 si ya estaba guardado; `{ data: { saved: true } }`. |
+| `DELETE /api/personal-aquarium/:fishId` | Bearer JWT | 204 idempotente; elimina únicamente la relación de guardado del usuario. |
 
-No hay clics sobre los peces ni CRUD de colecciones en esta entrega.
+El propietario siempre se deriva de la sesión verificada. No se aceptan datos de propietario en POST. Guardar un pez propio devuelve 409; ya se incluye automáticamente en la colección. UUID/paginación inválidos devuelven 400, sesión inválida 401, pez inexistente 404 y dependencias no disponibles 503. La restricción única resuelve guardados simultáneos sin duplicar filas. Ninguna ruta elimina dibujos ni relaciones de otros usuarios.
+
+El frontend reutiliza el motor Canvas en ambas peceras. La selección invierte traslación, rotación, escala y giro del sprite y consulta su máscara alfa; se elige el pez visible más cercano cuando se superponen. Hay selector de teclado alternativo. La ficha obtiene el perfil de `auth-user-service` y la galería/estado de guardado de este servicio. El avatar usa el color e inicial del perfil existente.
 
 ## Configuración y despliegue independiente
 
-Cada directorio incluye `.env.example`. Copiarlo a `.env` es opcional para los servicios reservados mientras sus puertos y orígenes por defecto sean suficientes. El servicio de usuarios necesita URL y clave pública reales. El de dibujos necesita además la clave secreta y la configuración de moderación. `INICIAR.cmd` prepara los archivos locales sin sobrescribirlos; los secretos deben configurarse por equipo o en el hosting. Las variables existentes del hosting prevalecen sobre `--env-file-if-exists`.
+Cada directorio incluye `.env.example`. Los servicios de usuarios, ecosistema y colecciones necesitan URL y clave pública reales. El de dibujos necesita además la clave secreta y la configuración de moderación. `INICIAR.cmd` prepara los archivos locales sin sobrescribirlos; los secretos deben configurarse por equipo o en el hosting. Las variables existentes del hosting prevalecen sobre `--env-file-if-exists`.
 
 El monorepo usa pnpm workspaces. En cada despliegue instala desde la raíz y ejecuta `pnpm --filter NOMBRE-DEL-SERVICIO start`. Se puede publicar/versionar `services/_shared` como paquete de infraestructura en una evolución posterior; hoy el contexto de instalación incluye esa biblioteca local. No despliegues una carpeta aislada sin resolver su dependencia `workspace:*`.
 

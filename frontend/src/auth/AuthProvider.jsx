@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { authUserApi } from '../services/auth-user-api.js';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export function AuthProvider({ initialAuth, children }) {
   const [session, setSession] = useState(initialAuth.session);

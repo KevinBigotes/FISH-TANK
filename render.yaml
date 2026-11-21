@@ -1,0 +1,91 @@
+# Four independent Node services. Supabase remains the database and file storage.
+# No private keys belong in this file.
+services:
+  - type: web
+    name: fish-tank-auth
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm install --global pnpm@11.25.0 && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter auth-user-service start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: fish-tank-public-config
+
+  - type: web
+    name: fish-tank-aquarium
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm install --global pnpm@11.25.0 && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter aquarium-ecosystem-service start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: fish-tank-public-config
+      - key: ECOSYSTEM_SERVICE_TOKEN
+        generateValue: true
+      - key: WEATHER_LAT
+        value: '20.5'
+      - key: WEATHER_LON
+        value: '-86.95'
+      - key: WEATHER_LOCATION
+        value: Cozumel, México
+      - key: WEATHER_TIMEZONE
+        value: America/Cancun
+
+  - type: web
+    name: fish-tank-drawing
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm install --global pnpm@11.25.0 && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter drawing-processing-service start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: fish-tank-public-config
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: MOCK_EXTERNAL_APIS
+        value: 'true'
+      - key: ECOSYSTEM_SERVICE_TOKEN
+        fromService:
+          type: web
+          name: fish-tank-aquarium
+          envVarKey: ECOSYSTEM_SERVICE_TOKEN
+      # Set AQUARIUM_ECOSYSTEM_SERVICE_URL to the aquarium's actual HTTPS URL
+      # after Render assigns it. Periodic synchronization works in the meantime.
+
+  - type: web
+    name: fish-tank-gallery
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm install --global pnpm@11.25.0 && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter gallery-collection-service start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: fish-tank-public-config
+
+envVarGroups:
+  - name: fish-tank-public-config
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY_HOPS
+        value: '1'
+      - key: CORS_ORIGINS
+        value: https://kevinbigotes.github.io
+      - key: SUPABASE_URL
+        value: https://zskigxxernjyvectrjhl.supabase.co
+      - key: SUPABASE_PUBLISHABLE_KEY
+        value: sb_publishable_CMK3u-x8nLkhav-ftkwlow_WBZtqJCc

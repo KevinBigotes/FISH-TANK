@@ -58,8 +58,10 @@ async function createIfMissing(relativePath, contents) {
   catch (error) { if (error.code !== 'EEXIST') throw error; }
 }
 if (command === 'dev') {
+  await createIfMissing('services/gallery-collection-service/.env', `PORT=3004\nHOST=127.0.0.1\nSUPABASE_URL=${projectConfig.supabaseUrl}\nSUPABASE_PUBLISHABLE_KEY=${projectConfig.supabaseKey}\nCORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173,https://kevinbigotes.github.io\n`);
   await createIfMissing('frontend/.env', `VITE_AUTH_USER_SERVICE_URL=http://localhost:3001\nVITE_DRAWING_PROCESSING_SERVICE_URL=http://localhost:3002\n`);
   const frontendEnv = path.join(root, 'frontend/.env');
+  if (!/^VITE_GALLERY_COLLECTION_SERVICE_URL=/m.test(await readFile(frontendEnv, 'utf8'))) await appendFile(frontendEnv, '\nVITE_GALLERY_COLLECTION_SERVICE_URL=http://localhost:3004\n');
   if (!/^VITE_DRAWING_PROCESSING_SERVICE_URL=/m.test(await readFile(frontendEnv, 'utf8'))) {
     await appendFile(frontendEnv, '\nVITE_DRAWING_PROCESSING_SERVICE_URL=http://localhost:3002\n');
   }

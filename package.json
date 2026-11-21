@@ -8,7 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "concurrently -k -n auth,drawing,aquarium,web \"pnpm --filter auth-user-service dev\" \"pnpm --filter drawing-processing-service dev\" \"pnpm --filter aquarium-ecosystem-service dev\" \"pnpm --filter frontend dev\"",
+    "dev": "concurrently -k -n auth,drawing,aquarium,gallery,web \"pnpm --filter auth-user-service dev\" \"pnpm --filter drawing-processing-service dev\" \"pnpm --filter aquarium-ecosystem-service dev\" \"pnpm --filter gallery-collection-service dev\" \"pnpm --filter frontend dev\"",
     "dev:services": "pnpm --parallel --filter './services/*' --if-present dev",
     "build": "pnpm --filter frontend build",
     "preview": "pnpm --filter frontend preview",

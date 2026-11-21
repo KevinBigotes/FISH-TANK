@@ -1,5 +1,44 @@
 @import "tailwindcss";
 
+.interactive-aquarium { pointer-events: auto !important; cursor: pointer; touch-action: manipulation; }
+.fish-accessible-select { position: absolute; left: 36px; top: 145px; width: 150px; color: #e4f5ec; border: 1px solid #ffffff33; border-radius: 12px; padding: 8px; background: #123e4b; font-size: 14px; }
+.fish-dialog { margin: auto 2vw auto auto; width: min(560px, 96vw); max-height: 92svh; overflow-y: auto; border: 0; border-radius: 24px; color: #123d40; background: #f6faf8; }
+.fish-dialog::backdrop { background: #00192888; }
+.fish-dialog article { position: relative; padding: 28px; }
+.fish-dialog h2 { font-size: 28px; font-weight: 600; overflow-wrap: anywhere; }
+.fish-portrait { display: block; object-fit: contain; width: 100%; height: 160px; margin: 12px 0 20px; }
+.fish-date { font-size: 13px; color: #54706d; margin: 8px 0 20px; }
+.creator-identity { display: flex; gap: 14px; margin-bottom: 22px; }
+.creator-avatar { flex: 0 0 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: #102f33; font-size: 22px; font-weight: bold; border: 2px solid #123d4022; }
+.creator-identity h3 { font-weight: 600; overflow-wrap: anywhere; }
+.creator-identity p { margin-top: 5px; font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.gallery-title { margin: 28px 0 16px; font-size: 18px; font-weight: 600; }
+.creator-fish-grid, .collection-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); gap: 14px; }
+.creator-fish-grid figure, .collection-grid article { border: 1px solid #d5e4dd; border-radius: 16px; background: white; padding: 12px; text-align: center; overflow-wrap: anywhere; }
+.creator-fish-grid img, .collection-grid img { width: 100%; height: 90px; object-fit: contain; }
+.creator-fish-grid figcaption { margin-top: 10px; font-size: 14px; }
+.personal-header { position: absolute; inset: 0 0 auto; display: flex; justify-content: space-between; gap: 20px; padding: 30px; background: linear-gradient(#032532aa,transparent); }
+.personal-header h1 { font-size: 28px; margin: 8px 0; }
+.personal-header nav { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 20px; font-size: 14px; }
+.personal-header button { color: white; border-color: #ffffff44; }
+.personal-error { position: absolute; top: 170px; left: 20px; right: 20px; padding: 12px; background: #732f37; border-radius: 12px; }
+.collection-drawer { position: absolute; bottom: 0; left: 0; right: 0; color: #153e3c; background: #f4faf7f5; border-radius: 24px 24px 0 0; }
+.collection-drawer summary { cursor: pointer; padding: 20px 28px; font-weight: 600; }
+.collection-content { max-height: 55svh; overflow-y: auto; padding: 0 28px 24px; }
+.collection-grid { margin-bottom: 24px; }
+.collection-grid article { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.collection-preview { width: 100%; }
+@media(max-width:600px) {
+  .aquarium-actions { flex-wrap: wrap; justify-content: flex-end; max-width: 210px; }
+  .aquarium-connection { top: 125px !important; }
+  .fish-accessible-select { top: 158px; left: 18px; }
+  .personal-header { padding: 18px; flex-wrap: wrap; }
+  .personal-header h1 { font-size: 24px; }
+  .personal-aquarium .fish-accessible-select { top: 190px; }
+  .fish-dialog { margin: auto; }
+  .fish-dialog article { padding: 22px; }
+}
+
 @theme {
   --color-ocean: #0a393b;
   --color-teal: #18776e;

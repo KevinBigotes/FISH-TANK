@@ -110,6 +110,7 @@ La URL y clave públicas de Supabase ya están incorporadas a la configuración.
 | `VITE_AUTH_USER_SERVICE_URL` | URL HTTPS del servicio Node, sin `/api/v1`. |
 | `VITE_DRAWING_PROCESSING_SERVICE_URL` | URL HTTPS del servicio de dibujos, sin `/api/v1`. |
 | `VITE_AQUARIUM_ECOSYSTEM_SERVICE_URL` | URL HTTPS del servicio de la pecera, sin `/api/v1` ni namespace. |
+| `VITE_GALLERY_COLLECTION_SERVICE_URL` | URL HTTPS del servicio de colecciones, sin `/api`. |
 
 **GitHub Pages aloja el frontend, no los procesos Node.** Registro, confirmación y login se conectan directamente a Supabase y funcionan sin un servidor Node publicado. La consulta/edición de perfiles sigue pasando por `auth-user-service`: hasta desplegarlo y configurar su URL, Pages muestra que el servicio de perfiles está pendiente. No se consulta PostgreSQL directamente desde React como alternativa oculta.
 
@@ -119,17 +120,32 @@ Para publicar peces desde Pages, despliega también `drawing-processing-service`
 
 Para la exhibición en Pages, despliega `aquarium-ecosystem-service` con soporte de WebSocket y configura `VITE_AQUARIUM_ECOSYSTEM_SERVICE_URL`. Pon el mismo `ECOSYSTEM_SERVICE_TOKEN` en ambos backends y `AQUARIUM_ECOSYSTEM_SERVICE_URL` en el servicio de dibujos. Ese enlace entre servicios debe usar HTTPS fuera de la PC. Añade `https://kevinbigotes.github.io` a los orígenes permitidos. La pecera solo necesita la clave pública de Supabase; OpenWeatherMap y el token interno permanecen en el backend.
 
-`frontend/.env.production` deja vacías las URLs de los tres servicios para impedir que un build local publique direcciones `localhost`. Las variables de Actions pueden reemplazarlas. Se conservan `base: './'` y rutas `/#/login`, `/#/registro`, `/#/pecera`, `/#/dibujar` y `/#/mi-pecera`, compatibles con enlaces directos y QR.
+Para las colecciones, despliega `gallery-collection-service` con `pnpm --filter gallery-collection-service start`, URL y clave pública de Supabase, `HOST=0.0.0.0`, puerto del proveedor y el mismo origen permitido. Configura `VITE_GALLERY_COLLECTION_SERVICE_URL` y vuelve a desplegar el frontend. Este servicio utiliza el JWT del usuario y respeta RLS; no necesita la clave secreta.
+
+`frontend/.env.production` deja vacías las URLs de los cuatro servicios para impedir que un build local publique direcciones `localhost`. Las variables de Actions pueden reemplazarlas. Se conservan `base: './'` y rutas `/#/login`, `/#/registro`, `/#/pecera`, `/#/dibujar` y `/#/mi-pecera`, compatibles con enlaces directos y QR.
+
+## Probar la Fase 4: perfiles y pecera personal
+
+Los cambios locales no actualizan GitHub Pages automáticamente: deben subirse al repositorio y terminar el workflow de publicación. Si Pages conserva una pantalla anterior, usa `Ctrl+F5`. Los servicios Node también necesitan alojamiento HTTPS para funcionar desde Pages.
+
+1. Ejecuta `INICIAR.cmd`; ahora inicia los cuatro servicios y el frontend. Abre **http://localhost:5173/#/pecera**.
+2. Para probar adopciones, usa dos cuentas reales con al menos un pez creado por cada una. Puedes abrir una cuenta en una ventana privada.
+3. Inicia sesión con una cuenta y toca el cuerpo de un pez de la otra. La selección ignora los píxeles transparentes, incluso al girar. También puedes usar **Explorar peces** con teclado.
+4. Comprueba nombre, fecha/hora de liberación, avatar de color con inicial, username, biografía y galería paginada del creador. Pulsa **Guardar en mi pecera personal**; debe cambiar a **Guardado en tu pecera**. Tus peces ya pertenecen a tu pecera y no muestran ese botón.
+5. Abre **Mi pecera**. Verás tus creaciones y los peces adoptados nadando con el mismo motor. Abre **Gestionar mi pecera** para distinguirlos y quitar un adoptado. Quitar solo elimina tu relación de guardado: el pez original permanece en la comunidad y en las colecciones de otras personas.
+6. Recarga y comprueba la persistencia. En Supabase, `personal_aquarium_fish` contiene tu UUID y el UUID del pez, sin duplicados. Cierra sesión y verifica que `/#/mi-pecera` redirige al login.
+
+No necesitas ejecutar SQL nuevo: se reutilizan las tablas, RLS y restricción única existentes. Las pruebas automatizadas verifican JWT, aislamiento entre usuarios, duplicados, unión de colecciones, eliminación y selección por transparencia. La revisión visual usa datos temporales en memoria y no crea cuentas ni peces reales en Supabase.
 
 ## Arquitectura y acceso
 
 | Componente | Puerto local | Estado |
 | --- | --- | --- |
-| `frontend` | 5173 | React + Vite + Tailwind CSS; autenticación, lienzo, postal, Canvas 2D y QR. |
+| `frontend` | 5173 | React + Vite + Tailwind CSS; autenticación, lienzo, postal, Canvas 2D, QR, fichas y pecera personal. |
 | `auth-user-service` | 3001 | Express; verifica JWT, consulta/edita perfiles y consulta creadores. |
 | `drawing-processing-service` | 3002 | JWT verificado, recorte PNG, moderación, Storage y publicación de `fish`. |
 | `aquarium-ecosystem-service` | 3003 | Exhibición pública, sincronización de peces, publicación entre servicios y clima. |
-| `gallery-collection-service` | 3004 | Base ejecutable. Funcionalidad reservada para Fase 4. |
+| `gallery-collection-service` | 3004 | Galerías por creador y colección personal con JWT y RLS. |
 
 Cada servicio tiene proceso, puerto, paquete y configuración propios. `services/_shared` es una biblioteca HTTP sin estado ni lógica de negocio. Los despliegues usan la raíz como contexto de instalación y ejecutan solo el servicio elegido. Consulta los [contratos de servicios](services/README.md).
 
@@ -137,7 +153,7 @@ Cada servicio tiene proceso, puerto, paquete y configuración propios. `services
 | --- | --- | --- |
 | `profiles` | Pública, sin correos. | Trigger de registro; el dueño modifica nombre, color y bio. UUID y fecha son inmutables. |
 | `fish` | Pública. | Solo el backend publica después de verificar al creador y moderar. Escritura directa desde navegador bloqueada. |
-| `personal_aquarium_fish` | Solo el dueño. | Guardar/eliminar favoritos propios, incluidos peces ajenos; `UNIQUE(user_id, fish_id)` evita duplicados. Sin API/UI todavía. |
+| `personal_aquarium_fish` | Solo el dueño. | Guardar/eliminar favoritos propios; `UNIQUE(user_id, fish_id)` evita duplicados. API y UI en Fase 4. |
 
 Las pruebas ejecutan `schema.sql` en PostgreSQL embebido (PGlite), emulando únicamente el esquema de Auth. Comprueban RLS, recorte, moderación, fallos de guardado y publicación HTTP seguida de eventos Socket.io reales entre procesos lógicos. Cubren permisos del namespace interno, reconexión, deduplicación, sincronización concurrente, clima y caducidad, giros y límites de física, y decodifican los QR con un lector independiente. Las dependencias externas se sustituyen en las pruebas; no se crean cuentas ni peces reales. La prueba con tu sesión se realiza siguiendo los pasos anteriores.
 

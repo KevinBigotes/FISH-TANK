@@ -9,6 +9,7 @@ export function readPublicConfig(env, defaults = projectConfig, hostname = globa
   const authServiceUrl = serviceUrl('VITE_AUTH_USER_SERVICE_URL', 3001);
   const drawingServiceUrl = serviceUrl('VITE_DRAWING_PROCESSING_SERVICE_URL', 3002);
   const aquariumServiceUrl = serviceUrl('VITE_AQUARIUM_ECOSYSTEM_SERVICE_URL', 3003);
+  const galleryServiceUrl = serviceUrl('VITE_GALLERY_COLLECTION_SERVICE_URL', 3004);
   const errors = [];
   for (const [name, value] of [['VITE_SUPABASE_URL', supabaseUrl], ['VITE_AUTH_USER_SERVICE_URL', authServiceUrl], ['VITE_DRAWING_PROCESSING_SERVICE_URL', drawingServiceUrl], ['VITE_AQUARIUM_ECOSYSTEM_SERVICE_URL', aquariumServiceUrl]]) {
     // Pages puede autenticar con Supabase sin un servicio Node desplegado todavía.
@@ -29,7 +30,11 @@ export function readPublicConfig(env, defaults = projectConfig, hostname = globa
   if (supabaseKey.startsWith('sb_secret_') || role === 'service_role') {
     errors.push('Usa una clave publishable o anon. Las claves secret y service_role no pertenecen al frontend.');
   }
-  return { supabaseUrl, supabaseKey, authServiceUrl, drawingServiceUrl, aquariumServiceUrl, errors };
+  if (galleryServiceUrl) {
+    try { const url = new URL(galleryServiceUrl); if (url.username || url.password || url.search || url.hash || !['https:', 'http:'].includes(url.protocol) || (url.protocol === 'http:' && !['localhost', '127.0.0.1'].includes(url.hostname) && !(lan && isPrivateHost(url.hostname)))) throw new Error(); }
+    catch { errors.push('Configura VITE_GALLERY_COLLECTION_SERVICE_URL con HTTPS en producción.'); }
+  }
+  return { supabaseUrl, supabaseKey, authServiceUrl, drawingServiceUrl, aquariumServiceUrl, galleryServiceUrl, errors };
 }
 
 export const config = readPublicConfig(import.meta.env || {});

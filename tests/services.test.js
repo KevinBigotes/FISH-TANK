@@ -84,10 +84,10 @@ test('el servicio de usuarios rechaza claves que omiten RLS', () => {
   assert.throws(() => createSupabaseClients({ ...common, SUPABASE_PUBLISHABLE_KEY: `eyJhbGciOiJIUzI1NiJ9.${payload}.fake` }), /publishable/);
 });
 
-test('servicios futuros arrancan y responden 501 sin implementar sus funcionalidades', async () => {
+test('el servicio de colecciones expone salud y exige autenticación', async () => {
   for (const app of [createGalleryApp()]) {
     const health = await request(app).get('/health').expect(200);
-    assert.equal(health.body.status, 'scaffold');
-    await request(app).post('/api/v1/fish').send({}).expect(501);
+    assert.equal(health.body.status, 'ok');
+    await request(app).get('/api/personal-aquarium').expect(401);
   }
 });
