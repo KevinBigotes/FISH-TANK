@@ -81,7 +81,7 @@ Las cuentas anteriores a la instalación del trigger no reciben un perfil retroa
 
 ## Probar la creación de un pez
 
-La configuración local de este equipo ya incluye la clave secreta proporcionada y `MOCK_EXTERNAL_APIS=true`. El bucket público `fish-sprites` ya está preparado. No necesitas volver a ejecutar `schema.sql` para esta prueba.
+La configuración local de este equipo ya incluye las credenciales necesarias y moderación real con `MOCK_EXTERNAL_APIS=false`, igual que Render. El bucket público `fish-sprites` ya está preparado. No necesitas volver a ejecutar `schema.sql` para esta prueba.
 
 1. Ejecuta `INICIAR.cmd` y abre **http://localhost:5173/#/dibujar**. Si no hay sesión, inicia sesión con tu cuenta existente.
 2. Dibuja con el dedo, lápiz o ratón. Prueba los colores, tres grosores, borrador, **Deshacer** y **Limpiar**. También puedes deshacer una limpieza. La guía del pez mira a la derecha y no se exporta.
@@ -89,11 +89,11 @@ La configuración local de este equipo ya incluye la clave secreta proporcionada
 4. Comprueba la postal con el dibujo recortado, nombre del pez y `@creador`. **Descargar mi pez** guarda un PNG transparente. **Ir a la Pecera Comunitaria** abre la exhibición en vivo.
 5. En **Supabase → Table Editor → fish**, verifica `name`, `image_url` y `creator_id`; este último debe coincidir con el `id` de tu fila en `profiles`. En **Storage → fish-sprites**, encontrarás `<creator_id>/<fish_id>.png`.
 
-Solo se simula la aprobación de moderación: **el PNG y la fila de `fish` son reales**. Si falla una conexión, conserva el dibujo y reintenta sin modificarlo: se reutiliza el identificador para evitar duplicados. La moderación simulada acepta cualquier contenido; úsala solo para las pruebas, no para abrir la exposición al público.
+**La moderación de Sightengine, el PNG y la fila de `fish` son reales**. Un dibujo rechazado no se publica; una caída, falta de cuota o respuesta incompleta del moderador también bloquea el guardado. Si falla una conexión, conserva el dibujo y reintenta sin modificarlo: se reutiliza el identificador para evitar duplicados. La revisión se aplica a nuevos envíos; no vuelve a analizar automáticamente los peces publicados anteriormente.
 
 Si copias el proyecto a otro equipo, completa `SUPABASE_SECRET_KEY` en `services/drawing-processing-service/.env`. El servicio puede crear el bucket al publicar el primer pez; también puedes prepararlo con `pnpm --filter drawing-processing-service run setup` o ejecutar [phase-2.sql](services/drawing-processing-service/sql/phase-2.sql) en el SQL Editor. Este SQL no borra datos y mantiene bloqueadas las subidas directas del navegador.
 
-Para activar Sightengine, configura `SIGHTENGINE_API_USER`, `SIGHTENGINE_API_SECRET` y `MOCK_EXTERNAL_APIS=false` en el backend y reinicia el lanzador. Se consultan los modelos `nudity-2.1`, `offensive` y `gore-2.0`. Una respuesta rechazada, incompleta o no disponible impide la publicación. Las credenciales nunca se envían al frontend. Consulta la [documentación oficial de Sightengine](https://sightengine.com/docs/).
+Sightengine utiliza `SIGHTENGINE_API_USER`, `SIGHTENGINE_API_SECRET` y `MOCK_EXTERNAL_APIS=false` en el backend. Al cambiar estas variables, reinicia el lanzador local o despliega de nuevo el servicio en Render. Se consultan los modelos `nudity-2.1`, `offensive` y `gore-2.0` antes de subir el PNG a Storage. Las credenciales nunca se envían al frontend. Consulta la [documentación oficial de Sightengine](https://sightengine.com/docs/).
 
 ## GitHub Pages: publicar la aplicación
 
@@ -110,7 +110,7 @@ Las cuatro variables `VITE_*_SERVICE_URL` del repositorio apuntan a estas direcc
 
 Las instancias gratuitas pueden tardar aproximadamente un minuto en despertar tras 15 minutos sin actividad. El frontend espera hasta 90 segundos en las consultas de perfiles, colecciones y disponibilidad de dibujos. Render comparte 750 horas gratuitas al mes entre los servicios del workspace; cuatro servicios activos continuamente pueden agotar esa cuota. Consulta los [límites del plan gratuito](https://render.com/docs/free).
 
-La moderación continúa en modo de prueba (`MOCK_EXTERNAL_APIS=true`). El clima usa exclusivamente **Current Weather Data 2.5**, `https://api.openweathermap.org/data/2.5/weather`, con `OPENWEATHER_API_KEY` configurada únicamente en el backend. No utiliza One Call 3.0. Se consulta una vez cada 10 minutos por instancia y se comparte el resultado con las pantallas. Los peces y PNG se guardan realmente en Supabase. No se contrató ningún plan de pago.
+La moderación real de Sightengine está activada (`MOCK_EXTERNAL_APIS=false`) y sus credenciales permanecen en el servicio de dibujos de Render. El clima usa exclusivamente **Current Weather Data 2.5**, `https://api.openweathermap.org/data/2.5/weather`, con `OPENWEATHER_API_KEY` configurada únicamente en el backend. No utiliza One Call 3.0. Se consulta una vez cada 10 minutos por instancia y se comparte el resultado con las pantallas. Los peces y PNG se guardan realmente en Supabase. No se contrató ningún plan de pago.
 
 Para actualizar la infraestructura, sube `render.yaml` y usa **Manual sync** en el Blueprint **Fish Tank** si Render no lo sincroniza automáticamente. El repositorio se conectó mediante su URL pública; no se debe asumir que están habilitados los despliegues automáticos del proveedor Git. GitHub Pages sí se publica al subir a `master`.
 

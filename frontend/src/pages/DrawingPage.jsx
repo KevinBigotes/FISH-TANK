@@ -100,6 +100,7 @@ export function DrawingPage() {
           <button type="button" className="text-link mt-2" onClick={() => setAttempt((value) => value + 1)}>Reintentar conexión</button>
         </div>}
         {capabilities?.moderationSimulated && <p className="mt-5 text-sm leading-relaxed text-slate-500">Modo de prueba: la revisión de contenido está simulada.</p>}
+        {capabilities?.ready && !capabilities.moderationSimulated && <p className="mt-5 text-sm leading-relaxed text-slate-500">Moderación de imágenes activa: revisaremos tu dibujo antes de publicarlo.</p>}
         {error && <p role="alert" className="message error mt-5">{error}</p>}
         {busy && <p role="status" className="mt-5 text-sm text-teal">Preparando, revisando y guardando tu pez. Conserva esta página abierta.</p>}
         <button type="submit" className="button-primary mt-5 w-full" disabled={busy || !drawing.hasInk || !name.trim() || !capabilities?.ready}>

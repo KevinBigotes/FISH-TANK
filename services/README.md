@@ -59,7 +59,7 @@ En una recuperación idempotente se devuelven `fish`, `creator` y `replayed: tru
 
 Errores controlados: 400 datos inválidos, 401 sesión inválida, 409 perfil ausente/envío en curso, 413 tamaño excesivo, 415 formato distinto de PNG, 422 dibujo vacío/corrupto o rechazado, 429 límite de envíos y 503 dependencia no disponible. Un fallo confirmado de inserción intenta eliminar únicamente el PNG de ese envío; ante un resultado incierto se conserva para evitar borrar un archivo que ya tiene registro. Una limpieza fallida queda en los logs para reconciliación.
 
-`MOCK_EXTERNAL_APIS=true` simula únicamente moderación aprobada. En modo real, las claves de Sightengine son obligatorias y cualquier error de su respuesta impide publicar. Se envía a Sightengine una copia con fondo blanco para analizarla; el PNG almacenado conserva transparencia. Los umbrales están en `src/moderation.js`.
+Render está configurado con `MOCK_EXTERNAL_APIS=false`: moderación real de Sightengine. Las claves son obligatorias y cualquier error de su respuesta impide publicar. Se envía a Sightengine una copia con fondo blanco para analizarla; el PNG almacenado conserva transparencia. Los umbrales están en `src/moderation.js`. El modo `MOCK_EXTERNAL_APIS=true` queda disponible únicamente para pruebas aisladas; no debe habilitarse en el despliegue público.
 
 Después de guardar, el servicio encola el UUID para el namespace `/publishers` del ecosistema. La cola tiene confirmación y reintentos; una caída de la pecera no revierte el guardado. Si reinicia el proceso, la sincronización desde Supabase recupera los avisos pendientes. La cola está limitada a 1000 UUID en memoria y no se presenta como una cola durable.
 

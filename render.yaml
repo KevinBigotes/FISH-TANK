@@ -54,7 +54,11 @@ services:
       - key: SUPABASE_SECRET_KEY
         sync: false
       - key: MOCK_EXTERNAL_APIS
-        value: 'true'
+        value: 'false'
+      - key: SIGHTENGINE_API_USER
+        sync: false
+      - key: SIGHTENGINE_API_SECRET
+        sync: false
       - key: ECOSYSTEM_SERVICE_TOKEN
         fromService:
           type: web
